@@ -4,7 +4,7 @@
 #undef REQUIRE_PLUGIN
 #include <updater>
 
-#define UPDATE_URL    "http://bitbucket.toastdev.de/sourcemod-plugins/Freeday.txt"
+#define UPDATE_URL    "http://bitbucket.toastdev.de/sourcemod-plugins/raw/a18e60cec31c4d60960f3426d6b3af3481d0169d/Freeday.txt"
 public Plugin:myinfo = 
 {
 	name = "Freeday",
