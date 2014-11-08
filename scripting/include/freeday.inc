@@ -1,8 +1,8 @@
 /** Double-include prevention */
-#if defined _mynatives_included_
+#if defined _freeday_included_
   #endinput
 #endif
-#define _mynatives_included_
+#define _freeday_included_
  
 /**
  * Checks if the Player has Freeday.
