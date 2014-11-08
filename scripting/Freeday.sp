@@ -3,6 +3,10 @@
 #include <sourcemod>
 #include <morecolors>
 
+#undef REQUIRE_PLUGIN
+#include <updater>
+
+#define UPDATE_URL    "http://bitbucket.toastdev.de/sourcemod-plugins/Freeday.txt"
 public Plugin:myinfo = 
 {
 	name = "Freeday",
@@ -45,8 +49,19 @@ public OnPluginStart()
 	{
 		Freeday[i] = 0;
 	}
+	if (LibraryExists("updater"))
+    {
+        Updater_AddPlugin(UPDATE_URL);
+    }
 
 	
+}
+public OnLibraryAdded(const String:name[])
+{
+    if (StrEqual(name, "updater"))
+    {
+        Updater_AddPlugin(UPDATE_URL)
+    }
 }
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
