@@ -10,7 +10,7 @@ public Plugin:myinfo =
 	name = "Freeday",
 	author = "Toast",
 	description = "A Freeday plugin for Jail",
-	version = "1.0",
+	version = "1.0.1",
 	url = "toastdev.de"
 }
 new Handle:c_fd_R;
