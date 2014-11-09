@@ -4,7 +4,7 @@
 #undef REQUIRE_PLUGIN
 #include <updater>
 
-#define UPDATE_URL    "http://bitbucket.toastdev.de/sourcemod-plugins/raw/a18e60cec31c4d60960f3426d6b3af3481d0169d/Freeday.txt"
+#define UPDATE_URL    "http://bitbucket.toastdev.de/sourcemod-plugins/raw/master/Freeday.txt"
 public Plugin:myinfo = 
 {
 	name = "Freeday",
@@ -20,6 +20,7 @@ new Freeday[MAXPLAYERS +1];
 new R;
 new G;
 new B;
+new FreedayRound[MAXPLAYERS + 1];
 
 public OnPluginStart()
 {
@@ -40,9 +41,11 @@ public OnPluginStart()
 	B = GetConVarInt(c_fd_B);
 	
 	
-	RegConsoleCmd("sm_sf", FreedayCommandHandler);
+	RegAdminCmd("sm_sf", FreedayCommandHandler, FlagToBit(Admin_Kick), "Give Freedays");
 	
 	LoadTranslations("freeday.phrases");
+	LoadTranslations("common.phrases")
+	
 	for (new i = 1; i <= MaxClients; i++)
 	{
 		Freeday[i] = 0;
@@ -91,6 +94,12 @@ public PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	new client;
 	client = GetClientOfUserId(userid);
 	Freeday[client] = 0;
+	if(FreedayRound[client] == 1)
+	{
+		MarkFreeday(client);
+		Freeday[client] = 1;
+	}
+	FreedayRound[client] = 0;
 }
 public ConVarChanged(Handle:cvar, const String:oldValue[], const String:newValue[]) {
 	
@@ -108,8 +117,36 @@ public ConVarChanged(Handle:cvar, const String:oldValue[], const String:newValue
 
 public Action:FreedayCommandHandler(client, args)
 {
-	if (!GetAdminFlag(GetUserAdmin(client), Admin_Kick) && IsClientInGame(client)) {
-		CPrintToChat(client, "%t %t", "prefix", "error_no_permission");
+	new String:Arg[MAX_TARGET_LENGTH];
+	if (!IsClientInGame(client)) {
+		CReplyToCommand(client, "%t %t", "prefix", "error_no_permission");
+		return Plugin_Handled;
+	}
+	else if(args < 1)
+	{
+		GetCmdArg(1, Arg, sizeof(Arg));
+		new String:target_name[MAX_TARGET_LENGTH];
+		new target_list[MAXPLAYERS], target_count, bool:tn_is_ml;
+		target_count = ProcessTargetString(Arg, client, target_list, MAXPLAYERS, COMMAND_FILTER_NO_IMMUNITY, target_name, sizeof(target_name), tn_is_ml);
+		if(target_count <= 0){
+			ReplyToTargetError(client, target_count);
+			return Plugin_Handled;
+		}
+		for(new i; i <= target_count;i++){
+			new target = target_list[i]
+			if(IsPlayerAlive(target) && GetClientTeam(target) == 2)
+			{
+				MarkFreeday(target);
+			}
+			else if(GetClientTeam(target) == 2){
+				FreedayRound[target] = 1;
+				new String:targetname[MAX_NAME_LENGTH];
+				GetClientName(client, targetname, sizeof(targetname)); 
+				CReplyToCommand(client, "%t %t", "prefix", "player_freeday_next_round", targetname);
+			}
+		}
+		return Plugin_Handled;
+		
 	}
 	else{
 		new String:string[64];
@@ -131,6 +168,7 @@ public Action:FreedayCommandHandler(client, args)
 		SetMenuExitButton(menu, true);
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
+	return Plugin_Continue;
 }
 
 
@@ -143,6 +181,25 @@ public FreedayMenuHandler(Handle:menu, MenuAction:action, client, param2)
 		GetMenuItem(menu, param2, info, sizeof(info));
 		t = StringToInt(info);
 		MarkFreeday(t);
+		
+		new String:string[64];
+		new Handle:menu2 = CreateMenu(FreedayMenuHandler);
+		Format(string,sizeof(string),"%t", "FreedayMenuTitle", LANG_SERVER);
+		SetMenuTitle(menu2, string);
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if(IsClientInGame(i)){
+				if(GetClientTeam(i) == 2 && IsPlayerAlive(i)){
+					
+					new String:info2[32];
+					GetClientName(i, string, sizeof(string));
+					IntToString(i, info2, sizeof(info2));
+					AddMenuItem(menu2, info2, string);
+				}
+			}
+		}
+		SetMenuExitButton(menu, true);
+		DisplayMenu(menu2, client, MENU_TIME_FOREVER);
 	}
 }
 
