@@ -122,7 +122,7 @@ public Action:FreedayCommandHandler(client, args)
 		CReplyToCommand(client, "%t %t", "prefix", "error_no_permission");
 		return Plugin_Handled;
 	}
-	else if(args < 1)
+	else if(args > 0)
 	{
 		GetCmdArg(1, Arg, sizeof(Arg));
 		new String:target_name[MAX_TARGET_LENGTH];
@@ -142,7 +142,7 @@ public Action:FreedayCommandHandler(client, args)
 				FreedayRound[target] = 1;
 				new String:targetname[MAX_NAME_LENGTH];
 				GetClientName(client, targetname, sizeof(targetname)); 
-				CReplyToCommand(client, "%t %t", "prefix", "player_freeday_next_round", targetname);
+				CPrintToChat(client, "%t %t", "prefix", "player_freeday_next_round", targetname);
 			}
 		}
 		return Plugin_Handled;
