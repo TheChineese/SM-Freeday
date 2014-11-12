@@ -15,8 +15,8 @@
 	"Files"
 	{
 		"Plugin"	"Path_SM/plugins/Freeday.smx"
-		"Plugin"	"Path_SM/translations/Freeday.phrases.txt"
-		"Plugin"	"Path_SM/translations/de/Freeday.phrases.txt"
+		"Plugin"	"Path_SM/translations/freeday.phrases.txt"
+		"Plugin"	"Path_SM/translations/de/freeday.phrases.txt"
 		
 		"Source"	"Path_SM/scripting/Freeday.sp"
 	}
