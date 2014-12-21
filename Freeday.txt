@@ -4,12 +4,11 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.1"
+			"Latest"	"1.0.2"
 		}
 		
 		"Notes"	"Changelog:"
-		"Notes"	"Added Arg Support"
-		"Notes"	"Fixed Updater Link"
+		"Notes"	"Bugfixes"
 	}
 	
 	"Files"
