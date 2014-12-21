@@ -10,7 +10,7 @@ public Plugin:myinfo =
 	name = "Freeday",
 	author = "Toast",
 	description = "A Freeday plugin for Jail",
-	version = "1.0.1",
+	version = "1.0.2",
 	url = "toastdev.de"
 }
 new Handle:c_fd_R;
@@ -133,7 +133,7 @@ public Action:FreedayCommandHandler(client, args)
 			return Plugin_Handled;
 		}
 		for(new i; i <= target_count;i++){
-			new target = target_list[i]
+			new target = target_list[i];
 			if(IsPlayerAlive(target) && GetClientTeam(target) == 2)
 			{
 				MarkFreeday(target);
@@ -141,7 +141,7 @@ public Action:FreedayCommandHandler(client, args)
 			else if(GetClientTeam(target) == 2){
 				FreedayRound[target] = 1;
 				new String:targetname[MAX_NAME_LENGTH];
-				GetClientName(client, targetname, sizeof(targetname)); 
+				GetClientName(target, targetname, sizeof(targetname)); 
 				CPrintToChat(client, "%t %t", "prefix", "player_freeday_next_round", targetname);
 			}
 		}
