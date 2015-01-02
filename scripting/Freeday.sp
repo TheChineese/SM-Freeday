@@ -1,4 +1,5 @@
 #include <sourcemod>
+#include <sdktools>
 #include <morecolors>
 
 #undef REQUIRE_PLUGIN
@@ -10,21 +11,56 @@ public Plugin:myinfo =
 	name = "Freeday",
 	author = "Toast",
 	description = "A Freeday plugin for Jail",
-	version = "1.0.3",
-	url = "toastdev.de"
+	version = "1.0.4",
+	url = "bitbucket.toastdev.de"
 }
 new Handle:c_fd_R;
 new Handle:c_fd_G;
 new Handle:c_fd_B;
+new Handle:g_color;
+new Handle:g_beacon;
+new Handle:g_beacon_interval;
+new Handle:g_radius
+new Handle:BeaconHandles[MAXPLAYERS+1];
 new Freeday[MAXPLAYERS +1];
 new R;
 new G;
 new B;
+new bool:colors = true;
+new bool:beacon = false;
 new FreedayRound[MAXPLAYERS + 1];
+new g_BeamSprite = -1;
+new g_HaloSprite = -1;
+new g_Game = 0;
+public OnMapStart()
+{
+	// Code from Last Request: FruitNinja plugin
+	if(g_Game == 0)
+	{
+			decl String:gdir[PLATFORM_MAX_PATH];
+			GetGameFolderName(gdir,sizeof(gdir));
+			if (StrEqual(gdir,"cstrike",false)){
+				g_Game = 1;
+			}
+	}
+	// Precache any materials needed
+	if(g_Game == 1)
+	{
+		g_BeamSprite = PrecacheModel("materials/sprites/laser.vmt");
+		g_HaloSprite = PrecacheModel("materials/sprites/halo01.vmt");
+	}
+	else
+	{
+		g_BeamSprite = PrecacheModel("materials/sprites/laserbeam.vmt");
+		g_HaloSprite = PrecacheModel("materials/sprites/glow01.vmt");
+	}
+}
 
 public OnPluginStart()
 {
 	HookEvent("player_spawn", PlayerSpawn);
+	HookEvent("player_death", PlayerDeath);
+	HookEvent("round_end", RoundEnd);
 	HookEvent("player_disconnect", PlayerDissconnect);
 	HookEvent("player_activate", PlayerJoin);
 	
@@ -32,6 +68,10 @@ public OnPluginStart()
 	c_fd_R = CreateConVar("freeday_R", "255", "The Red Color for marking");
 	c_fd_G = CreateConVar("freeday_G", "0", "The Green Color for marking");
 	c_fd_B = CreateConVar("freeday_B", "0", "The Blue Color for marking");
+	g_color = CreateConVar("freeday_enable_color", "1", "Enable colored marking for Freeday players");
+	g_beacon = CreateConVar("freeday_enable_beacon", "0", "Enable beacon marking for Freeday players");
+	g_beacon_interval = CreateConVar("freeday_beacon_interval", "1.0", "The Interval for the beacon");
+	g_radius = CreateConVar("freeday_beacon_radius", "375.0", "The radius of the beacon");
 	HookConVarChange(c_fd_R, ConVarChanged);
 	HookConVarChange(c_fd_G, ConVarChanged);
 	HookConVarChange(c_fd_B, ConVarChanged);
@@ -39,6 +79,13 @@ public OnPluginStart()
 	R = GetConVarInt(c_fd_R);
 	G = GetConVarInt(c_fd_G);
 	B = GetConVarInt(c_fd_B);
+
+	if(g_color != INVALID_HANDLE){
+		colors = GetConVarBool(g_color);
+	}
+	if(g_beacon != INVALID_HANDLE){
+		beacon = GetConVarBool(g_beacon);
+	}
 	
 	
 	RegAdminCmd("sm_sf", FreedayCommandHandler, FlagToBit(Admin_Kick), "Give Freedays");
@@ -50,11 +97,29 @@ public OnPluginStart()
 	{
 		Freeday[i] = 0;
 	}
+
 	if (LibraryExists("updater"))
     {
         Updater_AddPlugin(UPDATE_URL);
     }
 
+	
+}
+public Action:BeaconTimer(Handle:timer, any:client)
+{
+	if(beacon && IsClientInGame(client) && IsPlayerAlive(client))
+	{
+		new beaconColor[4];
+		beaconColor[0] = R;
+		beaconColor[1] = G;
+		beaconColor[2] = B;
+		beaconColor[3] = 500;
+		// Code from CS:GO beacon plugin by Johnny
+		new Float:vec[3];
+		GetClientAbsOrigin(client, vec);
+		vec[2] += 10;
+		TE_SetupBeamRingPoint(vec, 10.0, GetConVarFloat(g_radius), g_BeamSprite, g_HaloSprite, 0, 10, 0.6, 10.0, 0.5,  beaconColor, 10, 0)
+	}
 	
 }
 public OnLibraryAdded(const String:name[])
@@ -67,6 +132,7 @@ public OnLibraryAdded(const String:name[])
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
    CreateNative("HasFreeday", Native_Has_Freeday);
+   CreateNative("SetFreeday", Native_Set_Freeday);
    return APLRes_Success;
 }
 public PlayerDissconnect(Handle:event, const String:name[], bool:dontBroadcast)
@@ -101,6 +167,20 @@ public PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 	FreedayRound[client] = 0;
 }
+public RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	KillAllBeaconTimers()
+}
+public PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	new userid = GetEventInt(event, "userid");
+	new client = GetClientOfUserId(userid);
+	if(BeaconHandles[client] != INVALID_HANDLE){
+		KillTimer(BeaconHandles[client]);
+		BeaconHandles[client] = INVALID_HANDLE;
+	}
+}
+
 public ConVarChanged(Handle:cvar, const String:oldValue[], const String:newValue[]) {
 	
 	if(cvar == c_fd_R){
@@ -111,6 +191,12 @@ public ConVarChanged(Handle:cvar, const String:oldValue[], const String:newValue
 	}
 	else if(cvar == c_fd_B){
 		B = StringToInt(newValue);
+	}
+	else if(cvar == g_color){
+		colors = GetConVarBool(g_color);
+	}
+	else if(cvar == g_beacon){
+		colors = GetConVarBool(g_beacon);
 	}
 	
 }
@@ -209,13 +295,33 @@ MarkFreeday(client)
 	if(IsPlayerAlive(client))
 	{
 		new String:name[64];
-		SetEntityRenderMode(client,RENDER_TRANSCOLOR);
-		SetEntityRenderColor(client, R, G, B, 255);
+		
+		if(colors){
+			SetEntityRenderMode(client,RENDER_TRANSCOLOR);
+			SetEntityRenderColor(client, R, G, B, 255);
+		}
+		if(beacon && BeaconHandles[client] == INVALID_HANDLE)
+		{
+			BeaconHandles[client] = CreateTimer(GetConVarFloat(g_beacon_interval), BeaconTimer, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE)
+		}
 		GetClientName(client, name, sizeof(name));
 		CPrintToChatAll("%t %t", "prefix", "freeday_sucess", name);
 		Freeday[client] = 1;
 	}
 	
+}
+
+KillAllBeaconTimers()
+{
+	//Kill all timers
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if(BeaconHandles[i] != INVALID_HANDLE){
+
+			KillTimer(BeaconHandles[i]);
+			BeaconHandles[i] = INVALID_HANDLE;
+		}
+	}	
 }
 
 public Native_Has_Freeday(Handle:plugin, numParams){
@@ -225,4 +331,19 @@ public Native_Has_Freeday(Handle:plugin, numParams){
 		return true;
 	}
 	return false;
+}
+public Native_Set_Freeday(Handle:plugin, numParams){
+
+	new client = GetNativeCell(1);
+	if(IsClientInGame(client) && Freeday[client] != 1){
+		MarkFreeday(client);
+		return true;
+	}
+	else if(Freeday[client] == 1 && GetNativeCell(2) != 1){
+		FreedayRound[client] = 1;
+		return true;
+	}
+	else{
+		return false;
+	}
 }
