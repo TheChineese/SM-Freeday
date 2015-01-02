@@ -118,7 +118,8 @@ public Action:BeaconTimer(Handle:timer, any:client)
 		new Float:vec[3];
 		GetClientAbsOrigin(client, vec);
 		vec[2] += 10;
-		TE_SetupBeamRingPoint(vec, 10.0, GetConVarFloat(g_radius), g_BeamSprite, g_HaloSprite, 0, 10, 0.6, 10.0, 0.5,  beaconColor, 10, 0)
+		TE_SetupBeamRingPoint(vec, 10.0, GetConVarFloat(g_radius), g_BeamSprite, g_HaloSprite, 0, 10, 0.6, 10.0, 0.5,  beaconColor, 10, 0);
+		TE_SendToAll();
 	}
 	
 }
