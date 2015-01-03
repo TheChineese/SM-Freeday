@@ -75,6 +75,7 @@ public OnPluginStart()
 	HookConVarChange(c_fd_R, ConVarChanged);
 	HookConVarChange(c_fd_G, ConVarChanged);
 	HookConVarChange(c_fd_B, ConVarChanged);
+	AutoExecConfig();
 	
 	R = GetConVarInt(c_fd_R);
 	G = GetConVarInt(c_fd_G);
@@ -92,7 +93,7 @@ public OnPluginStart()
 	
 	LoadTranslations("freeday.phrases");
 	LoadTranslations("common.phrases");
-	AutoExecConfig();
+
 	
 	for (new i = 1; i <= MaxClients; i++)
 	{
@@ -136,6 +137,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
    CreateNative("HasFreeday", Native_Has_Freeday);
    CreateNative("SetFreeday", Native_Set_Freeday);
+   MarkNativeAsOptional("Updater_AddPlugin");
    return APLRes_Success;
 }
 public PlayerDissconnect(Handle:event, const String:name[], bool:dontBroadcast)
@@ -203,7 +205,6 @@ public ConVarChanged(Handle:cvar, const String:oldValue[], const String:newValue
 	}
 	
 }
-
 public Action:FreedayCommandHandler(client, args)
 {
 	new String:Arg[MAX_TARGET_LENGTH];
@@ -223,8 +224,7 @@ public Action:FreedayCommandHandler(client, args)
 		}
 		for(new i; i <= target_count;i++){
 			new target = target_list[i];
-			if(IsPlayerAlive(target) && GetClientTeam(target) == 2)
-			{
+			if(IsPlayerAlive(target) && GetClientTeam(target) == 2){
 				MarkFreeday(target);
 			}
 			else if(GetClientTeam(target) == 2){
