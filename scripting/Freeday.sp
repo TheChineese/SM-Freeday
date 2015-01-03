@@ -75,6 +75,10 @@ public OnPluginStart()
 	HookConVarChange(c_fd_R, ConVarChanged);
 	HookConVarChange(c_fd_G, ConVarChanged);
 	HookConVarChange(c_fd_B, ConVarChanged);
+	HookConVarChange(g_color, ConVarChanged);
+	HookConVarChange(g_beacon, ConVarChanged);
+	HookConVarChange(g_beacon_interval, ConVarChanged);
+	HookConVarChange(g_radius, ConVarChanged);
 	AutoExecConfig();
 	
 	R = GetConVarInt(c_fd_R);
