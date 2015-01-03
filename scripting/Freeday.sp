@@ -91,7 +91,8 @@ public OnPluginStart()
 	RegAdminCmd("sm_sf", FreedayCommandHandler, FlagToBit(Admin_Kick), "Give Freedays");
 	
 	LoadTranslations("freeday.phrases");
-	LoadTranslations("common.phrases")
+	LoadTranslations("common.phrases");
+	AutoExecConfig();
 	
 	for (new i = 1; i <= MaxClients; i++)
 	{
