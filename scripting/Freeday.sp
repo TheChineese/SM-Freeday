@@ -96,6 +96,7 @@ public OnPluginStart()
 	for (new i = 1; i <= MaxClients; i++)
 	{
 		Freeday[i] = 0;
+		BeaconHandles[i] = INVALID_HANDLE;
 	}
 
 	if (LibraryExists("updater"))
@@ -177,7 +178,7 @@ public PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	new userid = GetEventInt(event, "userid");
 	new client = GetClientOfUserId(userid);
 	if(BeaconHandles[client] != INVALID_HANDLE){
-		KillTimer(BeaconHandles[client]);
+		KillTimer(BeaconHandles[client])
 		BeaconHandles[client] = INVALID_HANDLE;
 	}
 }
