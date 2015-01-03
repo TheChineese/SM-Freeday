@@ -5,7 +5,9 @@
 #undef REQUIRE_PLUGIN
 #include <updater>
 
-#define UPDATE_URL    "http://bitbucket.toastdev.de/sourcemod-plugins/raw/master/Freeday.txt"
+#define UPDATE_URL		"http://bitbucket.toastdev.de/sourcemod-plugins/raw/master/Freeday.txt"
+#define SOUND_BLIP		"buttons/blip1.wav"
+
 public Plugin:myinfo = 
 {
 	name = "Freeday",
@@ -64,7 +66,6 @@ public OnPluginStart()
 	HookEvent("player_disconnect", PlayerDissconnect);
 	HookEvent("player_activate", PlayerJoin);
 	
-	CreateConVar("freeday_version", "1.0", "The current version of the plugin");
 	c_fd_R = CreateConVar("freeday_R", "255", "The Red Color for marking");
 	c_fd_G = CreateConVar("freeday_G", "0", "The Green Color for marking");
 	c_fd_B = CreateConVar("freeday_B", "0", "The Blue Color for marking");
@@ -127,6 +128,8 @@ public Action:BeaconTimer(Handle:timer, any:client)
 		vec[2] += 10;
 		TE_SetupBeamRingPoint(vec, 10.0, GetConVarFloat(g_radius), g_BeamSprite, g_HaloSprite, 0, 10, 0.6, 10.0, 0.5,  beaconColor, 10, 0);
 		TE_SendToAll();
+		GetClientEyePosition(client, vec);
+		EmitAmbientSound(SOUND_BLIP, vec, client, SNDLEVEL_RAIDSIREN);
 	}
 	
 }
