@@ -205,7 +205,7 @@ public ConVarChanged(Handle:cvar, const String:oldValue[], const String:newValue
 		colors = GetConVarBool(g_color);
 	}
 	else if(cvar == g_beacon){
-		colors = GetConVarBool(g_beacon);
+		beacon = GetConVarBool(g_beacon);
 	}
 	
 }
