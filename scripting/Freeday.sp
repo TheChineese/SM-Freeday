@@ -337,11 +337,11 @@ public Native_Has_Freeday(Handle:plugin, numParams){
 public Native_Set_Freeday(Handle:plugin, numParams){
 
 	new client = GetNativeCell(1);
-	if(IsClientInGame(client) && Freeday[client] != 1){
+	if(IsClientInGame(client) && Freeday[client] != 1 && GetNativeCell(2) == 1){
 		MarkFreeday(client);
 		return true;
 	}
-	else if(Freeday[client] == 1 && GetNativeCell(2) != 1){
+	else if(IsClientInGame(client) && GetNativeCell(2) != 1){
 		FreedayRound[client] = 1;
 		return true;
 	}
