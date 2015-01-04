@@ -4,13 +4,11 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.4"
+			"Latest"	"1.0.5"
 		}
 		
 		"Notes"	"Changelog:"
-		"Notes"	"Added Beacon"
-		"Notes"	"New native (SetFreeday)"
-		"Notes"	"Bugfixes"
+		"Notes"	"Added library notify"
 	}
 	
 	"Files"
