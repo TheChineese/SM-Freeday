@@ -13,7 +13,7 @@ public Plugin:myinfo =
 	name = "Freeday",
 	author = "Toast",
 	description = "A Freeday plugin for Jail",
-	version = "1.0.5",
+	version = "1.0.6",
 	url = "bitbucket.toastdev.de"
 }
 new Handle:c_fd_R;
@@ -142,8 +142,8 @@ public OnLibraryAdded(const String:name[])
 }
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-   CreateNative("HasFreeday", Native_Has_Freeday);
-   CreateNative("SetFreeday", Native_Set_Freeday);
+   CreateNative("FREEDAY_HasFreeday", Native_Has_Freeday);
+   CreateNative("FREEDAY_SetFreeday", Native_Set_Freeday);
    RegPluginLibrary("freeday");
    MarkNativeAsOptional("Updater_AddPlugin");
    return APLRes_Success;
