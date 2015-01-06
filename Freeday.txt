@@ -4,11 +4,11 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.5"
+			"Latest"	"1.0.6"
 		}
 		
 		"Notes"	"Changelog:"
-		"Notes"	"Added library notify"
+		"Notes"	"Changed Natives Name"
 	}
 	
 	"Files"
