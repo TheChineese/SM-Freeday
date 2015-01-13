@@ -18,5 +18,6 @@
 		"Plugin"	"Path_SM/translations/de/freeday.phrases.txt"
 		
 		"Source"	"Path_SM/scripting/Freeday.sp"
+		"Source"	"Path_SM/scripting/include/freeday.inc"
 	}
 }
