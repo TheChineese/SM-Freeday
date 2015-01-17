@@ -16,7 +16,7 @@ public SharedPlugin:__pl_freeday =
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_war_SetNTVOptional()
+public __pl_freeday_SetNTVOptional()
 {
 	MarkNativeAsOptional("FREEDAY_HasFreeday");
 	MarkNativeAsOptional("FREEDAY_SetFreeday");
