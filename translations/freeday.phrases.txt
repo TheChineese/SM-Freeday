@@ -1,0 +1,30 @@
+﻿"Phrases"
+{
+	"prefix"
+	{
+		"en"		"{fullred}[Freeday] "
+		"de"		"{fullred}[Freeday] "
+	}
+	"error_no_permission"
+	{
+		"en"		"{lavender}You cant give freedays!"
+		"de"		"{lavender}Du kannst keine Freedays vergeben!"
+	}
+	"FreedayMenuTitle"
+	{
+		"en"		"T's"
+		"de"		"T's"
+	}
+	"freeday_sucess"
+	{
+		"#format"	"{1:s}"
+		"en"		"{blue}{1} {lavender}has a freeday!"
+		"de"		"{blue}{1} {lavender}hat ein Freeday!"
+	}
+	"player_freeday_next_round"
+	{
+		"#format"	"{1:s}"
+		"en"		"{blue}{1} {lavender}has a freeday next round!"
+		"de"		"{blue}{1} {lavender}hat nächste Runde einen Freeday!"
+	}
+}
